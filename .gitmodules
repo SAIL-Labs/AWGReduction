@@ -1,0 +1,3 @@
+[submodule "@misprint"]
+	path = @misprint
+	url = https://christhechris@github.com/christhechris/misprint.git
