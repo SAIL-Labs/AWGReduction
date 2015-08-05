@@ -9,7 +9,9 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
             'Either provide no inputs, or specify logicals for shouldForceAll, shouldDestripe, shouldSigmaClip. Default is false true true.')
     end
     %assertWarning(shouldForceAll,'Files will be overwritten.')
-
+    
+    reduced_folder='reduced_chris';
+    
     %% get and parse filenames of all fits
     allfiles=dirFilenames('*.fits');
     allfiles=cellfun(@(x) x(1:end-5),allfiles,'UniformOutput',false);
@@ -38,8 +40,8 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
     uniquedarks=unique(exposure(darkobjects));
     
     %%
-    if ~isdir(fullfile(pwd,'reduced'))
-        mkdir('reduced')
+    if ~isdir(fullfile(pwd,reduced_folder))
+        mkdir(reduced_folder)
         %addpath(fullfile(pwd,'reduced'))
     end
     
@@ -61,7 +63,7 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
         darkFilenames=allfiles(logicalListOfLikeDarks);
         
         try
-            dark.(['d' num2str(uniquedarks(i))])=fitsread(fullfile('reduced', [num2str(uniquedarks(i)) '_masterdark.fit']));
+            dark.(['d' num2str(uniquedarks(i))])=fitsread(fullfile(reduced_folder, [num2str(uniquedarks(i)) '_masterdark.fit']));
             assert(~shouldForceAll,'Force flag set.')
         catch err
             
@@ -101,7 +103,7 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
             lightFilenames=allfiles(logicalListOfLikeObjectsAndExposures);
             
             try
-                fitsread(fullfile(pwd,'reduced',[objects{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_' num2str(uniqueexposures(exp)) '_coadded_' type{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_RED.fit']));
+                fitsread(fullfile(pwd,reduced_folder,[objects{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_' num2str(uniqueexposures(exp)) '_coadded_' type{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_RED.fit']));
                 assert(~shouldForceAll,'Force flag set.')
                 error
             catch err
@@ -139,12 +141,12 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
                     % combine cube
                     imdata(:,:,file)=sum(imagecube_darksub_fullflat,3); % combine dark subtracted image cube
                     %imagescubesize(file)=size(imagecube,3); % save image cube size for noise estimate
-                    fitswrite(imdata(:,:,file),fullfile(pwd,'reduced', [name '_RED.fit']),fitstructure2cell(header));
+                    fitswrite(imdata(:,:,file),fullfile(pwd,reduced_folder, [name '_RED.fit']),fitstructure2cell(header));
                     
                     %figure('Name',lightFilenames{i}(23:end-4));imagesc(imdata(:,:,i))
                     %set(gca,'CLim',[0 2^14*100])
                 end
-                fitswrite(sum(imdata,3),fullfile(pwd,'reduced',[objects{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_' num2str(uniqueexposures(exp)) '_coadded_' type{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_RED.fit']),fitstructure2cell(header))
+                fitswrite(sum(imdata,3),fullfile(pwd,reduced_folder,[objects{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_' num2str(uniqueexposures(exp)) '_coadded_' type{find(logicalListOfLikeObjectsAndExposures,1,'first')} '_RED.fit']),fitstructure2cell(header))
                 clear imdata imagescubesize
             end
         end
