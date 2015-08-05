@@ -85,7 +85,7 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
             fitswrite(masterdark,fullfile(reduced_folder,[num2str(uniquedarks(i)) '_masterdark.fit']),fitstructure2cell(header))
         end
     end
-    return
+    
     clear imagecube darkImdata header darkFilenames logicalListOfLikeDarks i j splits masterdark err
     
     %% dark subtract all other frames and combine unique objects with unique exposures
