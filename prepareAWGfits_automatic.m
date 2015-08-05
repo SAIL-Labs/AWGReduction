@@ -14,6 +14,7 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
     
     %% get and parse filenames of all fits
     allfiles=dirFilenames('*.fits');
+    
     allfiles=cellfun(@(x) x(1:end-5),allfiles,'UniformOutput',false);
     
     splitfilenames=regexp(allfiles, '_', 'split');
@@ -47,13 +48,13 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
     
     %% load mask
     try
-        load('reduced/mask_full.mat')
+        load(fullfile(reduced_folder, 'mask_full.mat'))
     catch err
         imdata=fitsread(flatfile);
         imagesc(log10(imdata))
         [xi, yi]=getpts;
         BW1 = roipoly(s2r.imdata,xi,yi);
-        save('reduced/mask_full.mat','BW1')
+        save(fullfile(reduced_folder, 'mask_full.mat'),'BW1')
     end
     mask=BW1;
     
@@ -81,7 +82,7 @@ function prepareAWGfits_automatic(shouldForceAll,shouldDeStripe,shouldSigmaClip)
             
             masterdark=mean(darkImdata,3); % combine all image cubes
             dark.(['d' num2str(uniquedarks(i))])=masterdark;
-            fitswrite(masterdark,['reduced/' num2str(uniquedarks(i)) '_masterdark.fit'],fitstructure2cell(header))
+            fitswrite(masterdark,fullfile(reduced_folder,[num2str(uniquedarks(i)) '_masterdark.fit']),fitstructure2cell(header))
         end
     end
     return
