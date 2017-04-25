@@ -1,0 +1,4 @@
+[submodule "@misprint"]
+	path = @misprint
+	url = https://github.com/SydneyAstrophotonicInstrumentationLab/misprint.git
+	branch = master
